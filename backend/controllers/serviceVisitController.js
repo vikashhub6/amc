@@ -97,13 +97,13 @@ async function completeVisit(req, res, next) {
       partsUsed = typeof req.body.partsUsed === 'string' ? JSON.parse(req.body.partsUsed) : req.body.partsUsed;
     }
 
-    const photosBefore = (req.files?.photosBefore || []).map((f) => `/uploads/photos/${f.filename}`);
-    const photosAfter = (req.files?.photosAfter || []).map((f) => `/uploads/photos/${f.filename}`);
+    const photosBefore = (req.files?.photosBefore || []).map((f) => f.location);
+    const photosAfter = (req.files?.photosAfter || []).map((f) => f.location);
     const signatureFile = req.files?.signature?.[0];
 
     if (photosBefore.length) visit.photosBefore.push(...photosBefore);
     if (photosAfter.length) visit.photosAfter.push(...photosAfter);
-    if (signatureFile) visit.customerSignature = `/uploads/signatures/${signatureFile.filename}`;
+    if (signatureFile) visit.customerSignature = signatureFile.location;
     if (technicianNotes) visit.technicianNotes = technicianNotes;
     if (partsUsed.length) visit.partsUsed = partsUsed;
 

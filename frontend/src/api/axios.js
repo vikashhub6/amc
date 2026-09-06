@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// Local dev: leave VITE_API_URL unset, Vite proxy (vite.config.js) forwards /api -> localhost:5000.
+// Production (Vercel): set VITE_API_URL to the deployed backend URL (e.g. Render), see .env.production.
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 
 // Har request me localStorage se JWT token attach karo

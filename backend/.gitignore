@@ -1,9 +1,3 @@
 node_modules/
 .env
-uploads/photos/*
-uploads/signatures/*
-uploads/invoices/*
-!uploads/photos/.gitkeep
-!uploads/signatures/.gitkeep
-!uploads/invoices/.gitkeep
 *.log

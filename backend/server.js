@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const path = require('path');
 
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
@@ -12,13 +11,20 @@ const app = express();
 
 connectDB();
 
-app.use(cors());
+// CORS_ORIGIN: comma-separated list of allowed frontend origins (e.g. Vercel URL).
+// Falls back to CLIENT_URL, then to allow-all for local dev if neither is set.
+const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CLIENT_URL || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
-
-// Uploaded photos/signatures/invoices static serve
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'API is healthy' }));
 

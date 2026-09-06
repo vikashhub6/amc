@@ -14,7 +14,7 @@ MongoDB (Mongoose) · Express.js · React (Vite) · Node.js · node-cron · Node
 ```bash
 cd backend
 npm install
-cp .env.example .env   # edit MONGO_URI if not using local Mongo
+cp .env.example .env   # edit MONGO_URI / AWS_* / CORS_ORIGIN
 npm run seed            # creates admin + 2 technicians + spare parts
 npm run dev              # http://localhost:5000
 ```
@@ -26,6 +26,16 @@ and prints a preview link in the console for every email sent. To send real
 emails, set `EMAIL_USER`/`EMAIL_PASS` in `.env`. SMS is a console-log stub
 (`utils/sendSMS.js`) — swap in a real MSG91/Fast2SMS call when going live.
 
+Photos, signatures and invoice PDFs are uploaded directly to an **AWS S3
+bucket** (`backend/config/s3.js`, `backend/middleware/upload.js`,
+`backend/utils/generateInvoice.js`) — nothing is written to local disk, so
+this works correctly on ephemeral hosts like Render. Create a bucket, an IAM
+user with `s3:PutObject`/`s3:GetObject` on it, and set `AWS_REGION`,
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET` in `.env`. The
+bucket needs public read (or a CloudFront/public bucket policy on the
+subfolders `photos/`, `signatures/`, `invoices/`) since the app stores and
+serves back plain S3 URLs.
+
 ### 2. Frontend
 ```bash
 cd frontend
@@ -34,8 +44,28 @@ npm run dev   # http://localhost:5173 (proxies /api to :5000)
 ```
 
 ### 3. MongoDB
-Use a local `mongod` or a free MongoDB Atlas cluster — just point
-`MONGO_URI` in `backend/.env` at it.
+Use a free MongoDB Atlas cluster in production — point `MONGO_URI` in
+`backend/.env` at it (a local `mongod` also works for local-only dev).
+
+## Deploying (Render + Vercel)
+
+**Backend on Render:**
+1. New Web Service → point at this repo, root directory `backend`.
+2. Build command `npm install`, start command `npm start`.
+3. Add all vars from `backend/.env.example` in Render's Environment tab —
+   `MONGO_URI` (Atlas), `JWT_SECRET`, `AWS_*`, and `CORS_ORIGIN` /
+   `CLIENT_URL` set to your Vercel frontend URL (e.g.
+   `https://your-app.vercel.app`).
+4. Note the Render URL it gives you (e.g. `https://your-app.onrender.com`).
+
+**Frontend on Vercel:**
+1. New Project → point at this repo, root directory `frontend`.
+2. Build command `npm run build`, output directory `dist` (Vercel
+   auto-detects Vite).
+3. Set env var `VITE_API_URL` to `https://your-app.onrender.com/api` (either
+   in Vercel's dashboard, or edit `frontend/.env.production` before pushing).
+4. Redeploy Render once you know the final Vercel URL, so `CORS_ORIGIN`
+   matches exactly (including `https://`, no trailing slash).
 
 ## What's implemented
 - JWT auth, 3 roles (admin/technician/customer)
