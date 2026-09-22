@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Landing from "./pages/Landing";
 
 import AdminLayout from "./layouts/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -148,7 +149,7 @@ export default function App() {
             <Route path="complaints" element={<CustomerComplaints />} />
           </Route>
 
-          <Route path="/" element={<HomeRedirect />} />
+          <Route path="/" element={<Landing />} />
           <Route path="*" element={<HomeRedirect />} />
         </Routes>
       </AuthProvider>
