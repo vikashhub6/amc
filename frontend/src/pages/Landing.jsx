@@ -21,6 +21,11 @@ const roles = [
 
 export default function Landing() {
   const { user } = useAuth();
+  const dashboardPath = user?.role === "admin"
+    ? "/admin"
+    : user?.role === "technician"
+      ? "/technician"
+      : "/customer";
 
   return (
     <main className="landing-page">
@@ -35,7 +40,7 @@ export default function Landing() {
         <div className="landing-nav-actions">
           <a href="#services">Services</a>
           <a href="#portals">Portals</a>
-          <Link className="landing-login" to={user ? "/admin" : "/login"}>
+          <Link className="landing-login" to={user ? dashboardPath : "/login"}>
             {user ? "Open dashboard" : "Sign in"} <span>↗</span>
           </Link>
         </div>
