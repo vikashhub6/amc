@@ -15,11 +15,18 @@ MongoDB (Mongoose) · Express.js · React (Vite) · Node.js · node-cron · Node
 cd backend
 npm install
 cp .env.example .env   # edit MONGO_URI / AWS_* / CORS_ORIGIN
-npm run seed            # creates admin + 2 technicians + spare parts
+npm run seed            # creates demo users, clients, AMCs, visits, payments, feedback, alerts
 npm run dev              # http://localhost:5000
 ```
-Seeded logins: `admin@dynamiccooling.in` / `admin123`,
-`ramesh.tech@dynamiccooling.in` / `tech123`.
+Demo logins after `npm run seed`:
+
+- Admin dashboard: `admin@dynamiccooling.in` / `admin123`
+- Technician dashboard: `ramesh.tech@dynamiccooling.in` / `tech123`
+- Customer dashboard: `aarav.shah@example.com` / `customer123`
+
+Additional demo accounts are also created for `diya.patel@example.com` and
+`raj.mehta@example.com`, both using `customer123`. Log in at `/login`; the
+app redirects each account to its role dashboard.
 
 Email is unconfigured by default — it auto-uses a free Ethereal test inbox
 and prints a preview link in the console for every email sent. To send real
