@@ -21,7 +21,7 @@ router.post(
   ctrl.createAMC
 );
 
-router.get('/', authorize('admin', 'technician'), ctrl.getAMCContracts);
+router.get('/', authorize('admin', 'technician', 'customer'), ctrl.getAMCContracts);
 router.get('/:id', authorize('admin', 'technician', 'customer'), ctrl.getAMCById);
 router.put('/:id', authorize('admin'), ctrl.updateAMC);
 router.post('/:id/renew', authorize('admin', 'customer'), ctrl.renewAMC);

@@ -315,6 +315,28 @@ async function seed() {
     demoRecords.push({ client, product, amc });
   }
 
+  const customerUsers = [];
+  for (let index = 0; index < 3; index += 1) {
+    const record = demoRecords[index];
+    const email = record.client.email;
+    let customerUser = await User.findOne({ email });
+    if (!customerUser) {
+      customerUser = await User.create({
+        name: record.client.name,
+        email,
+        phone: record.client.phone,
+        password: "customer123",
+        role: "customer",
+        client: record.client._id,
+      });
+      console.log(`Demo customer login created: ${email} / customer123`);
+    } else if (!customerUser.client || String(customerUser.client) !== String(record.client._id)) {
+      customerUser.client = record.client._id;
+      await customerUser.save();
+    }
+    customerUsers.push(customerUser);
+  }
+
   const technicians = await Technician.find().limit(2);
   for (let index = 0; index < 4 && technicians.length; index += 1) {
     const { client, product } = demoRecords[index];
@@ -349,6 +371,28 @@ async function seed() {
         scheduledDate,
         status: "scheduled",
       });
+    }
+  }
+
+  for (let index = 0; index < 6 && technicians.length; index += 1) {
+    const record = demoRecords[index];
+    const visitKey = `DEMO-CUSTOMER-VISIT-${String(index + 1).padStart(3, "0")}`;
+    const existingVisit = await ServiceVisit.findOne({ technician: technicians[index % technicians.length]._id, client: record.client._id, type: "routine", technicianNotes: visitKey });
+    if (!existingVisit) {
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() - (index < 3 ? index + 1 : -(index + 1)));
+      await ServiceVisit.create({
+        amcContract: record.amc._id,
+        client: record.client._id,
+        product: record.product._id,
+        technician: technicians[index % technicians.length]._id,
+        type: "routine",
+        scheduledDate,
+        completedDate: index < 3 ? new Date() : undefined,
+        status: index < 3 ? "completed" : "scheduled",
+        technicianNotes: visitKey,
+      });
+      console.log(`Customer dashboard visit created: ${visitKey}`);
     }
   }
 
