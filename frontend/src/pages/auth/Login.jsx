@@ -85,6 +85,7 @@ export default function Login() {
           <p className="font-semibold text-ink-600">Demo logins (after `npm run seed`)</p>
           <p>Admin: admin@dynamiccooling.in / admin123</p>
           <p>Technician: ramesh.tech@dynamiccooling.in / tech123</p>
+          <p>Customer: aarav.shah@example.com / customer123</p>
         </div>
       </div>
     </div>
